@@ -1,0 +1,44 @@
+{
+  "solution": {
+    "solutionName": "MySolution"
+  },
+  "urls": {
+    "dev": "https://org-dev.crm.dynamics.com/",
+    "uat": "https://org-uat.crm.dynamics.com/",
+    "prd": "https://org.crm.dynamics.com/"
+  },
+  "auth": {
+    "useExistingAuth": true,
+    "devName": "DEV_AUTH_ALIAS",
+    "uatName": "UAT_AUTH_ALIAS",
+    "prdName": "PRD_AUTH_ALIAS"
+  },
+  "release": {
+    "major": "1",
+    "minor": "1",
+    "deployToProd": false
+  },
+  "paths": {
+    "root": "C:\\Releases\\PowerPlatform",
+    "unmanaged": "Unmanaged - Source code",
+    "managed": "Managed - Deployed",
+    "uatSettings": "UAT - Deployment Settings",
+    "prdSettings": "PRD - Deployment Settings",
+    "tempUnpack": "temp_unpacked"
+  },
+  "options": {
+    "dryRun": false,
+    "keepUnpacked": false,
+    "confirmPrompts": true
+  },
+  "patch": {
+    "enabled": true
+  },
+  "patches": [
+    {
+      "tableName": "account",
+      "viewId": "11111111-1111-1111-1111-111111111111",
+      "columns": ["custom_hiddencolumnlogicalname"]
+    }
+  ]
+}
