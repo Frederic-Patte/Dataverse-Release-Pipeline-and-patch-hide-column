@@ -56,3 +56,113 @@ Run the script:
 
 ```powershell
 .\Deployement_MultiPatch-DataverseView.ps1 -ConfigPath ".\config.release.json"
+```
+
+---
+
+## 📋 JSON Configuration Guide
+
+The `config.release.json` file controls all aspects of the deployment. Here's how to configure it based on your needs:
+
+### Basic Structure
+
+```json
+{
+  "solution": {
+    "solutionName": "MySolution"
+  },
+  "urls": {
+    "dev": "https://org-dev.crm.dynamics.com/",
+    "uat": "https://org-uat.crm.dynamics.com/",
+    "prd": "https://org.crm.dynamics.com/"
+  },
+  "auth": {
+    "useExistingAuth": true,
+    "devName": "DEV_AUTH_ALIAS",
+    "uatName": "UAT_AUTH_ALIAS",
+    "prdName": "PRD_AUTH_ALIAS"
+  },
+  "release": {
+    "major": "1",
+    "minor": "1",
+    "deployToProd": false
+  },
+  "paths": {
+    "root": "C:\\Releases\\PowerPlatform",
+    "unmanaged": "Unmanaged - Source code",
+    "managed": "Managed - Deployed",
+    "uatSettings": "UAT - Deployment Settings",
+    "prdSettings": "PRD - Deployment Settings",
+    "tempUnpack": "temp_unpacked"
+  },
+  "options": {
+    "dryRun": false,
+    "keepUnpacked": false,
+    "confirmPrompts": true
+  },
+  "patch": {
+    "enabled": true
+  },
+  "patches": [ ... ]
+}
+```
+
+### Key Settings
+
+- **solution.solutionName**: Name of your solution in Dataverse  
+- **urls.dev/uat/prd**: Environment URLs for DEV, UAT, and Production  
+- **auth**: Authentication configuration (use existing auth or specify aliases)  
+- **release.major/minor**: Version numbers for the solution  
+- **release.deployToProd**: Set to `true` to deploy to Production, `false` for UAT only  
+- **paths**: Directory paths where solutions and settings files are stored  
+- **options.dryRun**: Preview changes without actually deploying  
+- **options.keepUnpacked**: Keep unpacked solution files after patching  
+- **options.confirmPrompts**: Show confirmation prompts during execution  
+- **patch.enabled**: Set to `true` to apply view patches to the Managed solution  
+- **patches**: Array of patch configurations (detailed below)
+
+---
+
+## 🎯 Column Hiding Feature
+
+The **Column Hiding feature** allows you to automatically hide specific columns across multiple views without manual XML editing.
+
+### How It Works
+
+1. **Enable patching**: Set `patch.enabled` to `true` in your config  
+2. **Define patch entries**: For each view, add an entry to the `patches` array with the table name, view ID, and columns to hide  
+3. **Script applies `ishidden="1"`**: Adds the hidden attribute to matching columns in the view XML  
+4. **Works in Managed solutions only**: Hidden columns persist through UAT/PROD deployments  
+
+### Example Configuration
+
+```json
+"patch": {
+  "enabled": true
+},
+"patches": [
+  {
+    "tableName": "account",
+    "viewId": "11111111-1111-1111-1111-111111111111",
+    "columns": ["aaduser", "displayname"]
+  },
+  {
+    "tableName": "test_1111_referential",
+    "viewId": "22222222-2222-2222-2222-222222222222",
+    "columns": ["lookupcolumn"]
+  }
+]
+```
+
+### Configuration Breakdown
+
+- **tableName**: The logical name of the table containing the view  
+- **viewId**: The unique ID of the view (GUID format) — found in the view's XML or Dataverse  
+- **columns**: Array of column logical names to hide in that view  
+
+### Why This Matters
+
+- **Preserves functionality**: Hidden lookup columns still allow related columns to load  
+- **Eliminates duplicates**: Hides redundant lookup displays while keeping the data accessible  
+- **No manual editing**: Changes apply automatically across all specified views  
+- **Managed solution safe**: Unlike unmanaged solutions, Managed packages retain the `ishidden="1"` attribute
